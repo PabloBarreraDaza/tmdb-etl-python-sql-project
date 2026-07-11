@@ -5,32 +5,16 @@ Pipeline ETL en Python que extrae datos de la API pública de [TMDB](https://www
 Proyecto creado como ejercicio práctico para consolidar Python + SQL, con foco en hacerlo representativo de un pipeline real, no solo un script de "llamar API y volcar en tabla".
 
 ## Arquitectura
-API TMDB
+API TMDB -> [Extract]  requests → JSON crudo
+
+│  BRONZE  → JSON crudo tal cual llega (histórico, sin transformar)
 │
-▼
-[Extract]  requests → JSON crudo
-│
-▼
-┌─────────────────────────────────────────┐
-│  BRONZE  → JSON crudo tal cual llega     │
-│            (histórico, sin transformar)  │
-└─────────────────────────────────────────┘
-│
-▼
 [Transform]  pandas → limpieza, tipado, enriquecimiento, analítica
 │
-▼
-┌─────────────────────────────────────────┐
-│  SILVER  → datos limpios y enriquecidos  │
-│            + métricas calculadas         │
-│            + flags de calidad de datos   │
-└─────────────────────────────────────────┘
-│
-▼
-┌─────────────────────────────────────────┐
-│  GOLD    → vistas SQL analíticas         │
-│            listas para consumo           │
-└─────────────────────────────────────────┘
+│  SILVER  → datos limpios y enriquecidos + métricas calculadas + flags de calidad de datos 
+
+│  GOLD    → vistas SQL analíticas listas para consumo           
+
 
 **Por qué esta arquitectura**: separar por capas permite trazabilidad total (Bronze conserva el dato tal cual llegó, por si hace falta reprocesar), mantiene la lógica de negocio fuera del extract/load, y deja la capa analítica (Gold) como pura SQL declarativa, fácil de consultar desde cualquier herramienta de BI sin tocar el pipeline.
 
