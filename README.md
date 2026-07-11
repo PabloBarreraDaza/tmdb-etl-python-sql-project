@@ -5,15 +5,35 @@ Pipeline ETL en Python que extrae datos de la API pública de [TMDB](https://www
 Proyecto creado como ejercicio práctico para consolidar Python + SQL, con foco en hacerlo representativo de un pipeline real, no solo un script de "llamar API y volcar en tabla".
 
 ## Arquitectura
-API TMDB -> [Extract]  requests → JSON crudo
 
-│  BRONZE  → JSON crudo tal cual llega (histórico, sin transformar)
-│
+```
+API TMDB
+   │
+   ▼
+[Extract]  requests → JSON crudo
+   │
+   ▼
+┌─────────────────────────────────────────┐
+│  BRONZE  → JSON crudo tal cual llega     │
+│            (histórico, sin transformar)  │
+└─────────────────────────────────────────┘
+   │
+   ▼
 [Transform]  pandas → limpieza, tipado, enriquecimiento, analítica
-│
-│  SILVER  → datos limpios y enriquecidos + métricas calculadas + flags de calidad de datos 
-│  GOLD    → vistas SQL analíticas listas para consumo           
-
+   │
+   ▼
+┌─────────────────────────────────────────┐
+│  SILVER  → datos limpios y enriquecidos  │
+│            + métricas calculadas         │
+│            + flags de calidad de datos   │
+└─────────────────────────────────────────┘
+   │
+   ▼
+┌─────────────────────────────────────────┐
+│  GOLD    → vistas SQL analíticas         │
+│            listas para consumo           │
+└─────────────────────────────────────────┘
+```
 
 **Por qué esta arquitectura**: separar por capas permite trazabilidad total (Bronze conserva el dato tal cual llegó, por si hace falta reprocesar), mantiene la lógica de negocio fuera del extract/load, y deja la capa analítica (Gold) como pura SQL declarativa, fácil de consultar desde cualquier herramienta de BI sin tocar el pipeline.
 
@@ -24,21 +44,26 @@ API TMDB -> [Extract]  requests → JSON crudo
 - **API**: [TMDB API v3](https://developer.themoviedb.org/reference/intro/getting-started)
 
 ## Estructura del proyecto
+
+```
 tmdb-etl/
-├── .env                  # credenciales (no versionado)
+├── .env                    # credenciales (no versionado)
 ├── .gitignore
 ├── requirements.txt
 ├── sql/
-│   └── bronze ── ddl_bronze.sql
-    └── silver ── ddl_silver.sql
-    └── gold ── ddl_gold.sql
-# schemas, tablas y vistas completas
+│   ├── bronze/
+│   │   └── ddl_bronze.sql   # schema y tabla de la capa bronze
+│   ├── silver/
+│   │   └── ddl_silver.sql   # schema y tablas de la capa silver
+│   └── gold/
+│       └── ddl_gold.sql     # schema y vistas de la capa gold
 └── src/
-├── config.py          # carga de variables de entorno
-├── extract.py          # llamadas a la API TMDB
-├── transform.py        # limpieza + analítica con pandas
-├── load.py             # carga en PostgreSQL
-└── main.py             # orquestación del pipeline
+    ├── config.py             # carga de variables de entorno
+    ├── extract.py             # llamadas a la API TMDB
+    ├── transform.py           # limpieza + analítica con pandas
+    ├── load.py                # carga en PostgreSQL
+    └── main.py                # orquestación del pipeline
+```
 
 ## Capas en detalle
 
@@ -80,20 +105,36 @@ pip install -r requirements.txt
 ### 2. Configura las variables de entorno
 
 Crea un archivo `.env` en la raíz con:
+
+```
 TMDB_API_KEY=tu_api_key_de_tmdb
 DB_HOST=localhost
 DB_PORT=5432
 DB_NAME=tmdb_etl
 DB_USER=postgres
 DB_PASSWORD=tu_password
+```
 
 Puedes obtener una API key gratuita en [themoviedb.org](https://www.themoviedb.org/settings/api).
 
 ### 3. Crea el esquema de base de datos
 
-Ejecuta el contenido de los archivos SQL en tu instancia de PostgreSQL (por ejemplo, con pgAdmin o `psql`).
+Ejecuta, en este orden, el contenido de los archivos SQL en tu instancia de PostgreSQL (por ejemplo, con pgAdmin o `psql`):
+
+```
+sql/bronze/ddl_bronze.sql
+sql/silver/ddl_silver.sql
+sql/gold/ddl_gold.sql
+```
+
+El orden importa: `gold` depende de las tablas creadas en `silver`, y `silver.movie_genres` depende de las tablas creadas en `silver` y `bronze` ya existentes.
 
 ### 4. Ejecuta el pipeline
+
+```bash
+cd src
+python main.py
+```
 
 ## Decisiones de diseño
 
