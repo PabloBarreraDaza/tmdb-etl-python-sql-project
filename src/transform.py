@@ -14,7 +14,9 @@ def transform_movies(raw_movies, details_list):
     df = df.drop_duplicates(subset="id")
 
     df_details = pd.DataFrame(details_list)[["id", "budget", "revenue", "runtime"]]
+    df_details = df_details.drop_duplicates(subset="id")
     df = df.merge(df_details, on="id", how="left")
+    
 
     df = add_bayesian_score(df)
     df = add_movie_category(df)
@@ -55,3 +57,4 @@ def build_movie_genres(df):
         for genre_id in row["genre_ids"]:
             filas.append({"movie_id": row["id"], "genre_id": genre_id})
     return pd.DataFrame(filas)
+
