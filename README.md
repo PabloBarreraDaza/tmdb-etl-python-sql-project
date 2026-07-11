@@ -1,8 +1,7 @@
 # TMDB ETL — Pipeline de datos de películas con arquitectura Bronze/Silver/Gold
 
-Pipeline ETL en Python que extrae datos de la API pública de [TMDB](https://www.themoviedb.org/), los transforma con `pandas` aplicando lógica analítica real, y los carga en PostgreSQL siguiendo una arquitectura de datos por capas (**Bronze → Silver → Gold**), similar a la que se usa en proyectos de ingeniería de datos en producción.
+Pipeline ETL en Python que extrae datos de la API pública de [TMDB](https://www.themoviedb.org/), los transforma con `pandas` aplicando lógica analítica real, y los carga en PostgreSQL siguiendo una arquitectura de datos por capas (**Bronze → Silver → Gold**)
 
-Proyecto creado como ejercicio práctico para consolidar Python + SQL, con foco en hacerlo representativo de un pipeline real, no solo un script de "llamar API y volcar en tabla".
 
 ## Arquitectura
 
