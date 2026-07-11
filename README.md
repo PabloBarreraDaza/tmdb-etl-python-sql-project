@@ -144,12 +144,11 @@ python main.py
 - **Vistas en vez de tablas para Gold**: al ser cálculos derivados de Silver, las vistas garantizan que Gold siempre esté sincronizado sin pasos de carga adicionales.
 
 ## Roadmap
-
-- [x] **Fase 1** — ETL básico funcional (extract → transform → load)
-- [x] **Fase 1.5** — Arquitectura Bronze/Silver/Gold, enriquecimiento de datos, transformaciones analíticas, 7 vistas Gold
-- [x] **Fase 2** — Tests con `pytest`, logging estructurado, manejo de errores con reintentos, validación con `pydantic`
-- [x] **Fase 3** — Dockerización completa (Postgres + pipeline en un solo `docker-compose up`)
-- [x] **Fase 4** — Scheduling automático (cron / Airflow) y cargas incrementales con histórico
+**Fase 1** — ETL básico funcional (extract → transform → load)
+**Fase 1.5** — Arquitectura Bronze/Silver/Gold, enriquecimiento de datos, transformaciones analíticas, 7 vistas Gold
+**Fase 2** — Tests con `pytest`, logging estructurado, manejo de errores con reintentos, validación con `pydantic`
+**Fase 3** — Dockerización completa (Postgres + pipeline en un solo `docker-compose up`)
+**Fase 4** — Scheduling automático (cron / Airflow) y cargas incrementales con histórico
 
 ## Autor
 
