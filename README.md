@@ -12,7 +12,6 @@ API TMDB -> [Extract]  requests → JSON crudo
 [Transform]  pandas → limpieza, tipado, enriquecimiento, analítica
 │
 │  SILVER  → datos limpios y enriquecidos + métricas calculadas + flags de calidad de datos 
-
 │  GOLD    → vistas SQL analíticas listas para consumo           
 
 
