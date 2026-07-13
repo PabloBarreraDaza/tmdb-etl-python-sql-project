@@ -1,4 +1,6 @@
 
+CREATE SCHEMA IF NOT EXISTS gold;
+
 -- vista que muestra estadísticas de películas por género
 CREATE VIEW gold.genre_stats AS
 SELECT

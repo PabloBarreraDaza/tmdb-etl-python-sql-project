@@ -1,0 +1,40 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: tmdb_etl_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./sql/bronze/ddl_bronze.sql:/docker-entrypoint-initdb.d/01_bronze.sql
+      - ./sql/silver/ddl_silver.sql:/docker-entrypoint-initdb.d/02_silver.sql
+      - ./sql/gold/ddl_gold.sql:/docker-entrypoint-initdb.d/03_gold.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  etl:
+    build: .
+    container_name: tmdb_etl_pipeline
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      TMDB_API_KEY: ${TMDB_API_KEY}
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+
+volumes:
+  pgdata:
