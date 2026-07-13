@@ -49,6 +49,8 @@ tmdb-etl/
 ├── .env                    # credenciales (no versionado)
 ├── .gitignore
 ├── requirements.txt
+├── docker-compose.yml
+├── Dockerfile 
 ├── sql/
 │   ├── bronze/
 │   │   └── ddl_bronze.sql   # schema y tabla de la capa bronze
