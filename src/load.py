@@ -88,3 +88,16 @@ def load_movie_genres(conn, df):
 
     conn.commit()
     cur.close()
+
+def load_movies_history(conn, df):
+    cur = conn.cursor()
+    columnas = ["id", "popularity", "vote_average", "vote_count", "bayesian_score", "category"]
+    registros = df[columnas].values.tolist()
+
+    execute_values(cur, """
+        INSERT INTO silver.movies_history (movie_id, popularity, vote_average, vote_count, bayesian_score, category)
+        VALUES %s
+    """, registros)
+
+    conn.commit()
+    cur.close()

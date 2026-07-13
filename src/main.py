@@ -1,6 +1,6 @@
 from extract import get_popular_movies, get_genres, get_movies_details_batch
 from transform import transform_movies, build_movie_genres
-from load import get_connection, load_genres, load_movies, load_movie_genres, load_bronze_movies
+from load import get_connection, load_genres, load_movies, load_movie_genres, load_bronze_movies, load_movies_history
 from logger_config import logger
 
 def run():
@@ -28,6 +28,7 @@ def run():
     load_genres(conn, genres)
     load_movies(conn, df_movies)
     load_movie_genres(conn, df_movie_genres)
+    load_movies_history(conn, df_movies)
     conn.close()
 
     logger.info(f"Pipeline completado: {len(df_movies)} películas y {len(genres)} géneros cargados.")

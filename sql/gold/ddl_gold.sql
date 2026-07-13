@@ -122,3 +122,48 @@ FROM quartiles q
 CROSS JOIN correlation c
 GROUP BY q.popularity_quartile, c.correlation_coefficient
 ORDER BY q.popularity_quartile;
+
+
+-- vista que muestra la evolución de la popularidad de las películas a lo largo del tiempo
+CREATE VIEW gold.movie_popularity_evolution AS
+WITH snapshots_ordenados AS (
+    SELECT
+        movie_id,
+        popularity,
+        vote_count,
+        bayesian_score,
+        snapshot_at,
+        FIRST_VALUE(popularity) OVER (
+            PARTITION BY movie_id ORDER BY snapshot_at
+            ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
+        ) AS primera_popularity,
+        FIRST_VALUE(popularity) OVER (
+            PARTITION BY movie_id ORDER BY snapshot_at DESC
+            ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
+        ) AS ultima_popularity,
+        FIRST_VALUE(snapshot_at) OVER (
+            PARTITION BY movie_id ORDER BY snapshot_at
+        ) AS primer_snapshot,
+        FIRST_VALUE(snapshot_at) OVER (
+            PARTITION BY movie_id ORDER BY snapshot_at DESC
+        ) AS ultimo_snapshot,
+        COUNT(*) OVER (PARTITION BY movie_id) AS num_snapshots
+    FROM silver.movies_history
+)
+SELECT DISTINCT
+    m.title,
+    s.num_snapshots,
+    s.primer_snapshot,
+    s.ultimo_snapshot,
+    s.primera_popularity,
+    s.ultima_popularity,
+    ROUND(s.ultima_popularity - s.primera_popularity, 2) AS variacion_popularity,
+    CASE
+        WHEN s.ultima_popularity > s.primera_popularity THEN 'subio'
+        WHEN s.ultima_popularity < s.primera_popularity THEN 'bajo'
+        ELSE 'igual'
+    END AS tendencia
+FROM snapshots_ordenados s
+JOIN silver.movies m ON m.id = s.movie_id
+WHERE s.num_snapshots > 1
+ORDER BY variacion_popularity DESC;

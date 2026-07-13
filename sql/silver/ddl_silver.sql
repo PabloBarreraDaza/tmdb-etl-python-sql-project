@@ -44,4 +44,14 @@ ALTER TABLE silver.movies ADD COLUMN flag_future_release BOOLEAN;
 ALTER TABLE silver.movies ADD COLUMN flag_empty_overview BOOLEAN;
 
 
-
+-- Añadir una tabla de histórico que demuestre que el pipeline puede ejecutarse varias veces y acumular evolución en el tiempo
+CREATE TABLE IF NOT EXISTS silver.movies_history (
+    id              SERIAL PRIMARY KEY,
+    movie_id        INT NOT NULL REFERENCES silver.movies(id),
+    popularity      NUMERIC,
+    vote_average    NUMERIC(4,2),
+    vote_count      INT,
+    bayesian_score  NUMERIC(4,2),
+    category        TEXT,
+    snapshot_at     TIMESTAMP DEFAULT NOW()
+);
